@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>お手軽意見交換ボード</title>
+  <title>お手軽ボード</title>
 
   <!-- Firebase SDK (compat版) -->
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
@@ -250,7 +250,7 @@
 <!-- ヘッダー -->
 <header>
   <div class="header-title">
-    <h1>お手軽意見交換ボード</h1>
+    <h1>お手軽ボード</h1>
     <p>みんなで書き込もう</p>
   </div>
   <div class="header-btns">
@@ -427,7 +427,7 @@
       const time = formatDate(p.timestamp);
       return `[${i + 1}] ${time}\n${p.body}`;
     });
-    const text = `お手軽意見交換ボード\nエクスポート日時：${formatDate(Date.now())}\n${'─'.repeat(30)}\n\n` + lines.join('\n\n─────────────────\n\n');
+    const text = `お手軽ボード\nエクスポート日時：${formatDate(Date.now())}\n${'─'.repeat(30)}\n\n` + lines.join('\n\n─────────────────\n\n');
     const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
