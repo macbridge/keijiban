@@ -395,7 +395,7 @@
 
   // Shift+Enterで改行、Enterで投稿
   document.getElementById('message').addEventListener('keydown', (e) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
+    if (e.key === 'Enter' && !e.shiftKey && !e.isComposing) {
       e.preventDefault();
       postMessage();
     }
