@@ -186,16 +186,12 @@
     /* ===== 投稿フォーム ===== */
     .form-section {
       background: #fff;
-      margin: 16px auto 32px;
       max-width: 480px;
       border-radius: 12px;
       padding: 16px;
       box-shadow: 0 1px 6px rgba(0,0,0,0.08);
-      margin-left: 16px;
-      margin-right: 16px;
-    }
-    @media (min-width: 512px) {
-      .form-section { margin-left: auto; margin-right: auto; }
+      margin: 16px auto 32px;
+      width: calc(100% - 32px);
     }
     .form-section h2 {
       font-size: 0.85rem;
@@ -294,6 +290,7 @@
     <span class="field-label">内容 <span style="color:#e53e3e">*</span></span>
     <textarea id="message" placeholder="ここに書き込んでください..." maxlength="500"></textarea>
   </div>
+  <p id="error-msg" style="color:#e53e3e;font-size:0.82rem;margin-bottom:8px;display:none;">内容を入力してください。</p>
   <button id="post-btn" onclick="postMessage()">投稿する</button>
 </div>
 
@@ -358,7 +355,9 @@
 
     const name = document.getElementById('nickname').value.trim();
     const body = document.getElementById('message').value.trim();
-    if (!body) { alert('内容を入力してください。'); return; }
+    const errMsg = document.getElementById('error-msg');
+    if (!body) { errMsg.style.display = 'block'; return; }
+    errMsg.style.display = 'none';
 
     const btn = document.getElementById('post-btn');
     btn.disabled = true;
