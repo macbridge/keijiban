@@ -21,50 +21,181 @@
       min-height: 100vh;
     }
 
+    /* ===== ヘッダー ===== */
     header {
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       color: #fff;
-      padding: 20px 16px 16px;
-      text-align: center;
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
       box-shadow: 0 2px 8px rgba(0,0,0,0.15);
     }
-    header h1 { font-size: 1.5rem; letter-spacing: 0.05em; }
-    header p  { font-size: 0.8rem; opacity: 0.85; margin-top: 4px; }
+    .header-title h1 { font-size: 1.3rem; letter-spacing: 0.05em; }
+    .header-title p  { font-size: 0.75rem; opacity: 0.85; margin-top: 3px; }
 
-    /* ===== QRコードセクション ===== */
-    .qr-section {
-      background: #fff;
-      margin: 16px auto;
-      max-width: 480px;
-      border-radius: 12px;
-      padding: 16px;
-      text-align: center;
-      box-shadow: 0 1px 6px rgba(0,0,0,0.08);
+    /* QRボタン */
+    #qr-btn {
+      background: rgba(255,255,255,0.2);
+      border: 1.5px solid rgba(255,255,255,0.6);
+      color: #fff;
+      border-radius: 8px;
+      padding: 8px 14px;
+      font-size: 0.82rem;
+      font-weight: bold;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background 0.2s;
+      flex-shrink: 0;
     }
-    .qr-section h2 {
+    #qr-btn:hover  { background: rgba(255,255,255,0.32); }
+    #qr-btn:active { background: rgba(255,255,255,0.15); }
+
+    /* ===== QRポップアップ ===== */
+    #qr-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.55);
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
+    }
+    #qr-overlay.show { display: flex; }
+
+    #qr-modal {
+      background: #fff;
+      border-radius: 16px;
+      padding: 24px 20px 20px;
+      text-align: center;
+      max-width: 300px;
+      width: 90%;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+      animation: popIn 0.22s ease;
+    }
+    @keyframes popIn {
+      from { opacity: 0; transform: scale(0.88); }
+      to   { opacity: 1; transform: scale(1); }
+    }
+    #qr-modal h2 {
       font-size: 0.85rem;
       color: #718096;
-      margin-bottom: 12px;
-      text-transform: uppercase;
+      margin-bottom: 14px;
       letter-spacing: 0.05em;
     }
     #qrcode { display: inline-block; }
     #qrcode img, #qrcode canvas { border-radius: 8px; }
     .qr-url {
-      margin-top: 8px;
-      font-size: 0.72rem;
+      margin-top: 10px;
+      font-size: 0.7rem;
       color: #a0aec0;
       word-break: break-all;
+    }
+    #qr-close {
+      margin-top: 16px;
+      padding: 9px 28px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    /* ===== 設定バナー ===== */
+    #setup-banner {
+      background: #fff5f5;
+      border: 1.5px solid #fc8181;
+      border-radius: 12px;
+      padding: 14px 16px;
+      margin: 16px auto;
+      max-width: 480px;
+      font-size: 0.85rem;
+      color: #c53030;
+      line-height: 1.6;
+    }
+    #setup-banner strong { display: block; margin-bottom: 4px; }
+
+    /* ===== 投稿一覧 ===== */
+    .posts-section {
+      max-width: 480px;
+      margin: 16px auto 0;
+      padding: 0 16px;
+    }
+    .posts-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding-bottom: 8px;
+    }
+    .posts-header h2 {
+      font-size: 0.85rem;
+      color: #718096;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .badge {
+      background: #667eea;
+      color: #fff;
+      border-radius: 99px;
+      font-size: 0.72rem;
+      padding: 1px 8px;
+      font-weight: bold;
+    }
+    .post-card {
+      background: #fff;
+      border-radius: 12px;
+      padding: 14px 16px;
+      margin-bottom: 10px;
+      box-shadow: 0 1px 6px rgba(0,0,0,0.08);
+      animation: fadeIn 0.3s ease;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-6px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .post-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+    }
+    .post-name {
+      font-size: 0.85rem;
+      font-weight: bold;
+      color: #667eea;
+    }
+    .post-time {
+      font-size: 0.72rem;
+      color: #a0aec0;
+    }
+    .post-body {
+      font-size: 0.95rem;
+      line-height: 1.6;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+    .empty-state {
+      text-align: center;
+      color: #a0aec0;
+      font-size: 0.9rem;
+      padding: 32px 0;
     }
 
     /* ===== 投稿フォーム ===== */
     .form-section {
       background: #fff;
-      margin: 0 auto 16px;
+      margin: 16px auto 32px;
       max-width: 480px;
       border-radius: 12px;
       padding: 16px;
       box-shadow: 0 1px 6px rgba(0,0,0,0.08);
+      margin-left: 16px;
+      margin-right: 16px;
+    }
+    @media (min-width: 512px) {
+      .form-section { margin-left: auto; margin-right: auto; }
     }
     .form-section h2 {
       font-size: 0.85rem;
@@ -112,108 +243,44 @@
     .form-section button:hover  { opacity: 0.88; }
     .form-section button:active { opacity: 0.75; }
     .form-section button:disabled { opacity: 0.5; cursor: not-allowed; }
-
-    /* ===== 投稿一覧 ===== */
-    .posts-section {
-      max-width: 480px;
-      margin: 0 auto 32px;
-      padding: 0 0 16px;
-    }
-    .posts-header {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 0 4px 8px;
-    }
-    .posts-header h2 {
-      font-size: 0.85rem;
-      color: #718096;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-    }
-    .badge {
-      background: #667eea;
-      color: #fff;
-      border-radius: 99px;
-      font-size: 0.72rem;
-      padding: 1px 8px;
-      font-weight: bold;
-    }
-
-    .post-card {
-      background: #fff;
-      border-radius: 12px;
-      padding: 14px 16px;
-      margin-bottom: 10px;
-      box-shadow: 0 1px 6px rgba(0,0,0,0.08);
-      animation: fadeIn 0.3s ease;
-    }
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(-6px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-    .post-meta {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 6px;
-    }
-    .post-name {
-      font-size: 0.85rem;
-      font-weight: bold;
-      color: #667eea;
-    }
-    .post-time {
-      font-size: 0.72rem;
-      color: #a0aec0;
-    }
-    .post-body {
-      font-size: 0.95rem;
-      line-height: 1.6;
-      white-space: pre-wrap;
-      word-break: break-word;
-    }
-
-    .empty-state {
-      text-align: center;
-      color: #a0aec0;
-      font-size: 0.9rem;
-      padding: 32px 0;
-    }
-
-    /* ===== 設定バナー（未設定時のみ表示） ===== */
-    #setup-banner {
-      background: #fff5f5;
-      border: 1.5px solid #fc8181;
-      border-radius: 12px;
-      padding: 14px 16px;
-      margin: 16px auto;
-      max-width: 480px;
-      font-size: 0.85rem;
-      color: #c53030;
-      line-height: 1.6;
-    }
-    #setup-banner strong { display: block; margin-bottom: 4px; }
   </style>
 </head>
 <body>
 
+<!-- ヘッダー -->
 <header>
-  <h1>共有掲示板</h1>
-  <p>QRコードを読み込んでアクセス・投稿できます</p>
+  <div class="header-title">
+    <h1>共有掲示板</h1>
+    <p>みんなで書き込もう</p>
+  </div>
+  <button id="qr-btn" onclick="openQR()">QRコード</button>
 </header>
+
+<!-- QRポップアップ -->
+<div id="qr-overlay" onclick="closeQR(event)">
+  <div id="qr-modal">
+    <h2>このページのQRコード</h2>
+    <div id="qrcode"></div>
+    <p class="qr-url" id="page-url"></p>
+    <button id="qr-close" onclick="closeQR()">閉じる</button>
+  </div>
+</div>
 
 <!-- Firebase未設定バナー -->
 <div id="setup-banner" style="display:none;">
   <strong>Firebase の設定が必要です</strong>
-  setup.md の手順に従って、このファイルの Firebase 設定を入力してください。
+  index.html 内の Firebase 設定を入力してください。
 </div>
 
-<!-- QRコード -->
-<div class="qr-section">
-  <h2>このページのQRコード</h2>
-  <div id="qrcode"></div>
-  <p class="qr-url" id="page-url"></p>
+<!-- 投稿一覧（最上位） -->
+<div class="posts-section">
+  <div class="posts-header">
+    <h2>投稿一覧</h2>
+    <span class="badge" id="count">0</span>
+  </div>
+  <div id="posts-list">
+    <p class="empty-state">まだ投稿がありません</p>
+  </div>
 </div>
 
 <!-- 投稿フォーム -->
@@ -230,20 +297,9 @@
   <button id="post-btn" onclick="postMessage()">投稿する</button>
 </div>
 
-<!-- 投稿一覧 -->
-<div class="posts-section">
-  <div class="posts-header">
-    <h2>投稿一覧</h2>
-    <span class="badge" id="count">0</span>
-  </div>
-  <div id="posts-list">
-    <p class="empty-state">まだ投稿がありません</p>
-  </div>
-</div>
-
 <script>
   // ============================================================
-  // ★ Firebase 設定をここに貼り付けてください（setup.md 参照）
+  // Firebase 設定
   // ============================================================
   const firebaseConfig = {
     apiKey:            "AIzaSyBZxOER6HkindLx84l7Ud0OhqcTX9RZdbw",
@@ -254,7 +310,6 @@
     messagingSenderId: "30184346038",
     appId:             "1:30184346038:web:24a3059b331a9c19887117"
   };
-  // ============================================================
 
   // 設定チェック
   const isConfigured = firebaseConfig.apiKey !== "YOUR_API_KEY";
@@ -269,7 +324,6 @@
     const db = firebase.database();
     const postsRef = db.ref('posts');
 
-    // ── リアルタイムで投稿を受信 ──
     postsRef.orderByChild('timestamp').on('value', (snapshot) => {
       const list = document.getElementById('posts-list');
       const countEl = document.getElementById('count');
@@ -296,7 +350,7 @@
     });
   }
 
-  // ── 投稿処理 ──
+  // 投稿処理
   function postMessage() {
     if (!isConfigured) return;
     const db = firebase.database();
@@ -325,7 +379,7 @@
     });
   }
 
-  // Enterキーで投稿（Shift+Enterで改行）
+  // Shift+Enterで改行、Enterで投稿
   document.getElementById('message').addEventListener('keydown', (e) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
@@ -333,19 +387,29 @@
     }
   });
 
-  // ── QRコード生成 ──
+  // QRコード生成
   const url = location.href;
   document.getElementById('page-url').textContent = url;
   new QRCode(document.getElementById('qrcode'), {
     text: url,
-    width: 160,
-    height: 160,
+    width: 180,
+    height: 180,
     colorDark: '#2d3748',
     colorLight: '#ffffff',
     correctLevel: QRCode.CorrectLevel.M
   });
 
-  // ── ユーティリティ ──
+  // QRポップアップ制御
+  function openQR() {
+    document.getElementById('qr-overlay').classList.add('show');
+  }
+  function closeQR(e) {
+    if (!e || e.target === document.getElementById('qr-overlay') || e.currentTarget === document.getElementById('qr-close')) {
+      document.getElementById('qr-overlay').classList.remove('show');
+    }
+  }
+
+  // ユーティリティ
   function escapeHtml(str) {
     return String(str)
       .replace(/&/g, '&amp;')
