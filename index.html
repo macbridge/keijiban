@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>共有掲示板</title>
+  <title>お手軽意見交換ボード</title>
 
   <!-- Firebase SDK (compat版) -->
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
@@ -35,7 +35,12 @@
     .header-title p  { font-size: 0.75rem; opacity: 0.85; margin-top: 3px; }
 
     /* QRボタン */
-    #qr-btn {
+    .header-btns {
+      display: flex;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+    .header-btn {
       background: rgba(255,255,255,0.2);
       border: 1.5px solid rgba(255,255,255,0.6);
       color: #fff;
@@ -46,10 +51,9 @@
       cursor: pointer;
       white-space: nowrap;
       transition: background 0.2s;
-      flex-shrink: 0;
     }
-    #qr-btn:hover  { background: rgba(255,255,255,0.32); }
-    #qr-btn:active { background: rgba(255,255,255,0.15); }
+    .header-btn:hover  { background: rgba(255,255,255,0.32); }
+    .header-btn:active { background: rgba(255,255,255,0.15); }
 
     /* ===== QRポップアップ ===== */
     #qr-overlay {
@@ -246,10 +250,13 @@
 <!-- ヘッダー -->
 <header>
   <div class="header-title">
-    <h1>共有掲示板</h1>
+    <h1>お手軽意見交換ボード</h1>
     <p>みんなで書き込もう</p>
   </div>
-  <button id="qr-btn" onclick="openQR()">QRコード</button>
+  <div class="header-btns">
+    <button class="header-btn" onclick="openQR()">QRコード</button>
+    <button class="header-btn" onclick="exportText()">書き出し</button>
+  </div>
 </header>
 
 <!-- QRポップアップ -->
@@ -333,6 +340,7 @@
       }
 
       const posts = Object.values(data).sort((a, b) => b.timestamp - a.timestamp);
+      cachedPosts = posts;
       countEl.textContent = posts.length;
 
       list.innerHTML = posts.map(p => `
@@ -406,6 +414,26 @@
     if (!e || e.target === document.getElementById('qr-overlay') || e.currentTarget === document.getElementById('qr-close')) {
       document.getElementById('qr-overlay').classList.remove('show');
     }
+  }
+
+  // テキストエクスポート
+  let cachedPosts = [];
+  function exportText() {
+    if (cachedPosts.length === 0) {
+      alert('投稿がありません。');
+      return;
+    }
+    const lines = cachedPosts.map((p, i) => {
+      const time = formatDate(p.timestamp);
+      return `[${i + 1}] ${time}\n${p.body}`;
+    });
+    const text = `お手軽意見交換ボード\nエクスポート日時：${formatDate(Date.now())}\n${'─'.repeat(30)}\n\n` + lines.join('\n\n─────────────────\n\n');
+    const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `意見交換ボード_${formatDate(Date.now()).replace(/[/ :]/g, '-')}.txt`;
+    a.click();
+    URL.revokeObjectURL(a.href);
   }
 
   // ユーティリティ
