@@ -192,24 +192,44 @@
       background: #fff;
       max-width: 480px;
       border-radius: 12px;
-      padding: 16px;
+      padding: 12px 16px 14px;
       box-shadow: 0 1px 6px rgba(0,0,0,0.08);
-      margin: 16px auto 32px;
+      margin: 12px auto 8px;
       width: calc(100% - 32px);
     }
-    .form-section h2 {
+    .form-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+    .form-header h2 {
       font-size: 0.85rem;
       color: #718096;
-      margin-bottom: 12px;
       text-transform: uppercase;
       letter-spacing: 0.05em;
     }
+    #post-btn {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 6px 18px;
+      font-size: 0.85rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: opacity 0.2s;
+      white-space: nowrap;
+    }
+    #post-btn:hover   { opacity: 0.88; }
+    #post-btn:active  { opacity: 0.75; }
+    #post-btn:disabled { opacity: 0.5; cursor: not-allowed; }
     .form-section input[type="text"],
     .form-section textarea {
       width: 100%;
       border: 1.5px solid #e2e8f0;
       border-radius: 8px;
-      padding: 10px 12px;
+      padding: 9px 12px;
       font-size: 0.95rem;
       font-family: inherit;
       transition: border-color 0.2s;
@@ -226,23 +246,8 @@
       margin-bottom: 4px;
       display: block;
     }
-    .form-section .field { margin-bottom: 10px; }
-    .form-section textarea { min-height: 90px; }
-    .form-section button {
-      width: 100%;
-      padding: 11px;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: #fff;
-      border: none;
-      border-radius: 8px;
-      font-size: 1rem;
-      font-weight: bold;
-      cursor: pointer;
-      transition: opacity 0.2s;
-    }
-    .form-section button:hover  { opacity: 0.88; }
-    .form-section button:active { opacity: 0.75; }
-    .form-section button:disabled { opacity: 0.5; cursor: not-allowed; }
+    .form-section .field { margin-bottom: 8px; }
+    .form-section textarea { min-height: 80px; }
   </style>
 </head>
 <body>
@@ -275,20 +280,12 @@
   index.html 内の Firebase 設定を入力してください。
 </div>
 
-<!-- 投稿一覧（最上位） -->
-<div class="posts-section">
-  <div class="posts-header">
-    <h2>投稿一覧</h2>
-    <span class="badge" id="count">0</span>
-  </div>
-  <div id="posts-list">
-    <p class="empty-state">まだ投稿がありません</p>
-  </div>
-</div>
-
 <!-- 投稿フォーム -->
 <div class="form-section">
-  <h2>新しい投稿</h2>
+  <div class="form-header">
+    <h2>新しい投稿</h2>
+    <button id="post-btn" onclick="postMessage()">投稿する</button>
+  </div>
   <div class="field">
     <span class="field-label">ニックネーム（任意）</span>
     <input type="text" id="nickname" placeholder="名無し" maxlength="30" />
@@ -297,8 +294,18 @@
     <span class="field-label">内容 <span style="color:#e53e3e">*</span></span>
     <textarea id="message" placeholder="ここに書き込んでください..." maxlength="500"></textarea>
   </div>
-  <p id="error-msg" style="color:#e53e3e;font-size:0.82rem;margin-bottom:8px;display:none;">内容を入力してください。</p>
-  <button id="post-btn" onclick="postMessage()">投稿する</button>
+  <p id="error-msg" style="color:#e53e3e;font-size:0.82rem;margin-top:4px;display:none;">内容を入力してください。</p>
+</div>
+
+<!-- 投稿一覧 -->
+<div class="posts-section">
+  <div class="posts-header">
+    <h2>投稿一覧</h2>
+    <span class="badge" id="count">0</span>
+  </div>
+  <div id="posts-list">
+    <p class="empty-state">まだ投稿がありません</p>
+  </div>
 </div>
 
 <script>
