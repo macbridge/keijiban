@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>共有掲示板</title>
+
+  <!-- Firebase SDK (compat版) -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+  <!-- QRコード生成 -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Helvetica Neue', Arial, 'Hiragino Sans', sans-serif;
+      background: #f0f4f8;
+      color: #2d3748;
+      min-height: 100vh;
+    }
+
+    header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #fff;
+      padding: 20px 16px 16px;
+      text-align: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    }
+    header h1 { font-size: 1.5rem; letter-spacing: 0.05em; }
+    header p  { font-size: 0.8rem; opacity: 0.85; margin-top: 4px; }
+
+    /* ===== QRコードセクション ===== */
+    .qr-section {
+      background: #fff;
+      margin: 16px auto;
+      max-width: 480px;
+      border-radius: 12px;
+      padding: 16px;
+      text-align: center;
+      box-shadow: 0 1px 6px rgba(0,0,0,0.08);
+    }
+    .qr-section h2 {
+      font-size: 0.85rem;
+      color: #718096;
+      margin-bottom: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    #qrcode { display: inline-block; }
+    #qrcode img, #qrcode canvas { border-radius: 8px; }
+    .qr-url {
+      margin-top: 8px;
+      font-size: 0.72rem;
+      color: #a0aec0;
+      word-break: break-all;
+    }
+
+    /* ===== 投稿フォーム ===== */
+    .form-section {
+      background: #fff;
+      margin: 0 auto 16px;
+      max-width: 480px;
+      border-radius: 12px;
+      padding: 16px;
+      box-shadow: 0 1px 6px rgba(0,0,0,0.08);
+    }
+    .form-section h2 {
+      font-size: 0.85rem;
+      color: #718096;
+      margin-bottom: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .form-section input[type="text"],
+    .form-section textarea {
+      width: 100%;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 10px 12px;
+      font-size: 0.95rem;
+      font-family: inherit;
+      transition: border-color 0.2s;
+      resize: vertical;
+    }
+    .form-section input[type="text"]:focus,
+    .form-section textarea:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+    .form-section .field-label {
+      font-size: 0.78rem;
+      color: #718096;
+      margin-bottom: 4px;
+      display: block;
+    }
+    .form-section .field { margin-bottom: 10px; }
+    .form-section textarea { min-height: 90px; }
+    .form-section button {
+      width: 100%;
+      padding: 11px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+    .form-section button:hover  { opacity: 0.88; }
+    .form-section button:active { opacity: 0.75; }
+    .form-section button:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    /* ===== 投稿一覧 ===== */
+    .posts-section {
+      max-width: 480px;
+      margin: 0 auto 32px;
+      padding: 0 0 16px;
+    }
+    .posts-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 0 4px 8px;
+    }
+    .posts-header h2 {
+      font-size: 0.85rem;
+      color: #718096;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .badge {
+      background: #667eea;
+      color: #fff;
+      border-radius: 99px;
+      font-size: 0.72rem;
+      padding: 1px 8px;
+      font-weight: bold;
+    }
+
+    .post-card {
+      background: #fff;
+      border-radius: 12px;
+      padding: 14px 16px;
+      margin-bottom: 10px;
+      box-shadow: 0 1px 6px rgba(0,0,0,0.08);
+      animation: fadeIn 0.3s ease;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-6px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .post-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+    }
+    .post-name {
+      font-size: 0.85rem;
+      font-weight: bold;
+      color: #667eea;
+    }
+    .post-time {
+      font-size: 0.72rem;
+      color: #a0aec0;
+    }
+    .post-body {
+      font-size: 0.95rem;
+      line-height: 1.6;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .empty-state {
+      text-align: center;
+      color: #a0aec0;
+      font-size: 0.9rem;
+      padding: 32px 0;
+    }
+
+    /* ===== 設定バナー（未設定時のみ表示） ===== */
+    #setup-banner {
+      background: #fff5f5;
+      border: 1.5px solid #fc8181;
+      border-radius: 12px;
+      padding: 14px 16px;
+      margin: 16px auto;
+      max-width: 480px;
+      font-size: 0.85rem;
+      color: #c53030;
+      line-height: 1.6;
+    }
+    #setup-banner strong { display: block; margin-bottom: 4px; }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>共有掲示板</h1>
+  <p>QRコードを読み込んでアクセス・投稿できます</p>
+</header>
+
+<!-- Firebase未設定バナー -->
+<div id="setup-banner" style="display:none;">
+  <strong>Firebase の設定が必要です</strong>
+  setup.md の手順に従って、このファイルの Firebase 設定を入力してください。
+</div>
+
+<!-- QRコード -->
+<div class="qr-section">
+  <h2>このページのQRコード</h2>
+  <div id="qrcode"></div>
+  <p class="qr-url" id="page-url"></p>
+</div>
+
+<!-- 投稿フォーム -->
+<div class="form-section">
+  <h2>新しい投稿</h2>
+  <div class="field">
+    <span class="field-label">ニックネーム（任意）</span>
+    <input type="text" id="nickname" placeholder="名無し" maxlength="30" />
+  </div>
+  <div class="field">
+    <span class="field-label">内容 <span style="color:#e53e3e">*</span></span>
+    <textarea id="message" placeholder="ここに書き込んでください..." maxlength="500"></textarea>
+  </div>
+  <button id="post-btn" onclick="postMessage()">投稿する</button>
+</div>
+
+<!-- 投稿一覧 -->
+<div class="posts-section">
+  <div class="posts-header">
+    <h2>投稿一覧</h2>
+    <span class="badge" id="count">0</span>
+  </div>
+  <div id="posts-list">
+    <p class="empty-state">まだ投稿がありません</p>
+  </div>
+</div>
+
+<script>
+  // ============================================================
+  // ★ Firebase 設定をここに貼り付けてください（setup.md 参照）
+  // ============================================================
+  const firebaseConfig = {
+    apiKey:            "AIzaSyBZxOER6HkindLx84l7Ud0OhqcTX9RZdbw",
+    authDomain:        "easy-board-12385.firebaseapp.com",
+    databaseURL:       "https://easy-board-12385-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId:         "easy-board-12385",
+    storageBucket:     "easy-board-12385.firebasestorage.app",
+    messagingSenderId: "30184346038",
+    appId:             "1:30184346038:web:24a3059b331a9c19887117"
+  };
+  // ============================================================
+
+  // 設定チェック
+  const isConfigured = firebaseConfig.apiKey !== "YOUR_API_KEY";
+  if (!isConfigured) {
+    document.getElementById('setup-banner').style.display = 'block';
+    document.getElementById('post-btn').disabled = true;
+  }
+
+  // Firebase 初期化
+  if (isConfigured) {
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+    const postsRef = db.ref('posts');
+
+    // ── リアルタイムで投稿を受信 ──
+    postsRef.orderByChild('timestamp').on('value', (snapshot) => {
+      const list = document.getElementById('posts-list');
+      const countEl = document.getElementById('count');
+      const data = snapshot.val();
+
+      if (!data) {
+        list.innerHTML = '<p class="empty-state">まだ投稿がありません</p>';
+        countEl.textContent = '0';
+        return;
+      }
+
+      const posts = Object.values(data).sort((a, b) => b.timestamp - a.timestamp);
+      countEl.textContent = posts.length;
+
+      list.innerHTML = posts.map(p => `
+        <div class="post-card">
+          <div class="post-meta">
+            <span class="post-name">${escapeHtml(p.name || '名無し')}</span>
+            <span class="post-time">${formatDate(p.timestamp)}</span>
+          </div>
+          <div class="post-body">${escapeHtml(p.body)}</div>
+        </div>
+      `).join('');
+    });
+  }
+
+  // ── 投稿処理 ──
+  function postMessage() {
+    if (!isConfigured) return;
+    const db = firebase.database();
+    const postsRef = db.ref('posts');
+
+    const name = document.getElementById('nickname').value.trim();
+    const body = document.getElementById('message').value.trim();
+    if (!body) { alert('内容を入力してください。'); return; }
+
+    const btn = document.getElementById('post-btn');
+    btn.disabled = true;
+    btn.textContent = '投稿中...';
+
+    postsRef.push({
+      name: name || '',
+      body: body,
+      timestamp: Date.now()
+    }).then(() => {
+      document.getElementById('message').value = '';
+      btn.disabled = false;
+      btn.textContent = '投稿する';
+    }).catch(err => {
+      alert('投稿に失敗しました: ' + err.message);
+      btn.disabled = false;
+      btn.textContent = '投稿する';
+    });
+  }
+
+  // Enterキーで投稿（Shift+Enterで改行）
+  document.getElementById('message').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      postMessage();
+    }
+  });
+
+  // ── QRコード生成 ──
+  const url = location.href;
+  document.getElementById('page-url').textContent = url;
+  new QRCode(document.getElementById('qrcode'), {
+    text: url,
+    width: 160,
+    height: 160,
+    colorDark: '#2d3748',
+    colorLight: '#ffffff',
+    correctLevel: QRCode.CorrectLevel.M
+  });
+
+  // ── ユーティリティ ──
+  function escapeHtml(str) {
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
+  function formatDate(ts) {
+    const d = new Date(ts);
+    const pad = n => String(n).padStart(2, '0');
+    return `${d.getFullYear()}/${pad(d.getMonth()+1)}/${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  }
+</script>
+</body>
+</html>
